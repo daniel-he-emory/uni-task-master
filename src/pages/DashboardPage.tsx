@@ -11,15 +11,14 @@ const DashboardPage = () => {
     <div className="container mx-auto max-w-6xl space-y-6">
       <div className="flex flex-col items-center sm:flex-row sm:justify-between sm:items-center gap-4">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full max-w-[400px]">
-          <TabsList className="w-full">
-            <TabsTrigger value="visual" className="flex-1">Data Visual</TabsTrigger>
-            <TabsTrigger value="table" className="flex-1">Table Task</TabsTrigger>
-          </TabsList>
-        </Tabs>
       </div>
       
-      <div className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="w-full max-w-[400px] mx-auto">
+          <TabsTrigger value="visual" className="flex-1">Data Visual</TabsTrigger>
+          <TabsTrigger value="table" className="flex-1">Table Task</TabsTrigger>
+        </TabsList>
+        
         <TabsContent value="visual" className="mt-6">
           <DashboardCharts />
         </TabsContent>
@@ -27,7 +26,7 @@ const DashboardPage = () => {
         <TabsContent value="table" className="mt-6">
           <TaskTable />
         </TabsContent>
-      </div>
+      </Tabs>
     </div>
   );
 };
