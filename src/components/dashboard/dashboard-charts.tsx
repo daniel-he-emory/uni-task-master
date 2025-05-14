@@ -33,19 +33,19 @@ const COLORS = ['#4361EE', '#3F37C9', '#4895EF', '#7209B7'];
 const DashboardCharts = () => {
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      {/* Team Progress */}
+      {/* Project Progress Card */}
       <Card className="col-span-2">
         <CardHeader>
           <CardTitle>Project Progress</CardTitle>
           <CardDescription>Overall completion: 62%</CardDescription>
         </CardHeader>
         <CardContent>
-          <Progress value={62} className="h-2" />
+          <Progress value={62} className="h-3" />
         </CardContent>
       </Card>
       
       {/* Task Completion Chart */}
-      <Card>
+      <Card className="h-full">
         <CardHeader>
           <CardTitle>Team Task Completion</CardTitle>
           <CardDescription>Tasks completed over time</CardDescription>
@@ -54,7 +54,7 @@ const DashboardCharts = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={taskCompletionData}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -75,7 +75,7 @@ const DashboardCharts = () => {
       </Card>
       
       {/* Personal Task Chart */}
-      <Card>
+      <Card className="h-full">
         <CardHeader>
           <CardTitle>Your Task Completion</CardTitle>
           <CardDescription>Your completed tasks over time</CardDescription>
@@ -84,7 +84,7 @@ const DashboardCharts = () => {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={personalTaskData}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 10, right: 30, left: 10, bottom: 10 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
@@ -118,7 +118,7 @@ const DashboardCharts = () => {
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                outerRadius={80}
+                outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
               >
