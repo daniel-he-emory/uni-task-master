@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react';
 import Logo from '@/components/ui/logo';
+import { Badge } from '@/components/ui/badge';
 
 interface Workspace {
   id: string;
