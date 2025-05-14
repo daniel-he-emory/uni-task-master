@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -124,148 +123,148 @@ const ReportForm = () => {
               <TabsTrigger value="add">Add New Record</TabsTrigger>
               <TabsTrigger value="view">View Record</TabsTrigger>
             </TabsList>
+            
+            <TabsContent value="add">
+              <CardContent className="space-y-4 pt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Record Title</Label>
+                  <Input 
+                    id="title" 
+                    value={newReport.title}
+                    onChange={(e) => setNewReport({...newReport, title: e.target.value})}
+                    placeholder="e.g., Week 3 Progress Review"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="accomplishment">Accomplishment This Week</Label>
+                  <Textarea 
+                    id="accomplishment" 
+                    value={newReport.accomplishment}
+                    onChange={(e) => setNewReport({...newReport, accomplishment: e.target.value})}
+                    placeholder="Describe what the team accomplished this week"
+                    rows={4}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="feedback">Feedback from Others</Label>
+                  <Textarea 
+                    id="feedback" 
+                    value={newReport.feedback}
+                    onChange={(e) => setNewReport({...newReport, feedback: e.target.value})}
+                    placeholder="Feedback from professor, client, or other stakeholders"
+                    rows={3}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="comments">Any Comment & Memo from Team</Label>
+                  <Textarea 
+                    id="comments" 
+                    value={newReport.comments}
+                    onChange={(e) => setNewReport({...newReport, comments: e.target.value})}
+                    placeholder="Additional comments or notes from the team"
+                    rows={3}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter>
+                <Button onClick={handleSubmitReport} className="w-full">
+                  Submit Record
+                </Button>
+              </CardFooter>
+            </TabsContent>
+            
+            <TabsContent value="view">
+              <CardContent className="pt-4">
+                <div className="grid md:grid-cols-5 gap-4">
+                  <div className="md:col-span-2 border rounded-md overflow-hidden">
+                    <ScrollArea className="h-96 p-4">
+                      <div className="space-y-2">
+                        <h3 className="font-medium text-sm">Select a record to view</h3>
+                        {reports.map((report) => (
+                          <div 
+                            key={report.id}
+                            onClick={() => setSelectedReport(report)}
+                            className={`p-3 border rounded-md cursor-pointer ${
+                              selectedReport?.id === report.id 
+                                ? 'bg-unitask-primary bg-opacity-10 border-unitask-primary' 
+                                : 'hover:bg-gray-50'
+                            }`}
+                          >
+                            <h4 className="font-medium">{report.title}</h4>
+                            <p className="text-xs text-muted-foreground">{formatDate(report.date)}</p>
+                          </div>
+                        ))}
+                        
+                        {reports.length === 0 && (
+                          <div className="text-center p-4 text-muted-foreground">
+                            No records yet. Add your first record in the "Add New Record" tab.
+                          </div>
+                        )}
+                      </div>
+                    </ScrollArea>
+                  </div>
+                  
+                  <div className="md:col-span-3">
+                    {selectedReport ? (
+                      <div className="space-y-6">
+                        <div>
+                          <h2 className="text-2xl font-bold">{selectedReport.title}</h2>
+                          <p className="text-sm text-muted-foreground">{formatDate(selectedReport.date)}</p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <h3 className="text-lg font-medium">Accomplishment</h3>
+                          <p className="text-sm">{selectedReport.accomplishment}</p>
+                        </div>
+                        
+                        {selectedReport.feedback && (
+                          <div className="space-y-2">
+                            <h3 className="text-lg font-medium">Feedback</h3>
+                            <p className="text-sm">{selectedReport.feedback}</p>
+                          </div>
+                        )}
+                        
+                        {selectedReport.comments && (
+                          <div className="space-y-2">
+                            <h3 className="text-lg font-medium">Comments</h3>
+                            <p className="text-sm">{selectedReport.comments}</p>
+                          </div>
+                        )}
+                        
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline" 
+                            onClick={() => {
+                              setEditingReport(selectedReport);
+                              setEditDialogOpen(true);
+                            }}
+                          >
+                            Modify Record
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            onClick={() => setDeleteDialogOpen(true)}
+                          >
+                            Delete Record
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <p className="text-muted-foreground">
+                          Select a record from the list to view its details
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </TabsContent>
           </Tabs>
         </CardHeader>
-        
-        <TabsContent value="add">
-          <CardContent className="space-y-4 pt-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Record Title</Label>
-              <Input 
-                id="title" 
-                value={newReport.title}
-                onChange={(e) => setNewReport({...newReport, title: e.target.value})}
-                placeholder="e.g., Week 3 Progress Review"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="accomplishment">Accomplishment This Week</Label>
-              <Textarea 
-                id="accomplishment" 
-                value={newReport.accomplishment}
-                onChange={(e) => setNewReport({...newReport, accomplishment: e.target.value})}
-                placeholder="Describe what the team accomplished this week"
-                rows={4}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="feedback">Feedback from Others</Label>
-              <Textarea 
-                id="feedback" 
-                value={newReport.feedback}
-                onChange={(e) => setNewReport({...newReport, feedback: e.target.value})}
-                placeholder="Feedback from professor, client, or other stakeholders"
-                rows={3}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="comments">Any Comment & Memo from Team</Label>
-              <Textarea 
-                id="comments" 
-                value={newReport.comments}
-                onChange={(e) => setNewReport({...newReport, comments: e.target.value})}
-                placeholder="Additional comments or notes from the team"
-                rows={3}
-              />
-            </div>
-          </CardContent>
-          <CardFooter>
-            <Button onClick={handleSubmitReport} className="w-full">
-              Submit Record
-            </Button>
-          </CardFooter>
-        </TabsContent>
-        
-        <TabsContent value="view">
-          <CardContent className="pt-4">
-            <div className="grid md:grid-cols-5 gap-4">
-              <div className="md:col-span-2 border rounded-md overflow-hidden">
-                <ScrollArea className="h-96 p-4">
-                  <div className="space-y-2">
-                    <h3 className="font-medium text-sm">Select a record to view</h3>
-                    {reports.map((report) => (
-                      <div 
-                        key={report.id}
-                        onClick={() => setSelectedReport(report)}
-                        className={`p-3 border rounded-md cursor-pointer ${
-                          selectedReport?.id === report.id 
-                            ? 'bg-unitask-primary bg-opacity-10 border-unitask-primary' 
-                            : 'hover:bg-gray-50'
-                        }`}
-                      >
-                        <h4 className="font-medium">{report.title}</h4>
-                        <p className="text-xs text-muted-foreground">{formatDate(report.date)}</p>
-                      </div>
-                    ))}
-                    
-                    {reports.length === 0 && (
-                      <div className="text-center p-4 text-muted-foreground">
-                        No records yet. Add your first record in the "Add New Record" tab.
-                      </div>
-                    )}
-                  </div>
-                </ScrollArea>
-              </div>
-              
-              <div className="md:col-span-3">
-                {selectedReport ? (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-2xl font-bold">{selectedReport.title}</h2>
-                      <p className="text-sm text-muted-foreground">{formatDate(selectedReport.date)}</p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <h3 className="text-lg font-medium">Accomplishment</h3>
-                      <p className="text-sm">{selectedReport.accomplishment}</p>
-                    </div>
-                    
-                    {selectedReport.feedback && (
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-medium">Feedback</h3>
-                        <p className="text-sm">{selectedReport.feedback}</p>
-                      </div>
-                    )}
-                    
-                    {selectedReport.comments && (
-                      <div className="space-y-2">
-                        <h3 className="text-lg font-medium">Comments</h3>
-                        <p className="text-sm">{selectedReport.comments}</p>
-                      </div>
-                    )}
-                    
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        onClick={() => {
-                          setEditingReport(selectedReport);
-                          setEditDialogOpen(true);
-                        }}
-                      >
-                        Modify Record
-                      </Button>
-                      <Button 
-                        variant="destructive" 
-                        onClick={() => setDeleteDialogOpen(true)}
-                      >
-                        Delete Record
-                      </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <p className="text-muted-foreground">
-                      Select a record from the list to view its details
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </CardContent>
-        </TabsContent>
       </Card>
       
       {/* Edit Dialog */}

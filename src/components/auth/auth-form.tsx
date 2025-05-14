@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -110,124 +109,124 @@ const AuthForm = () => {
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
               </TabsList>
+              
+              <TabsContent value="signin" className="mt-0">
+                <form onSubmit={handleSignInSubmit}>
+                  <CardContent className="space-y-4 pt-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-email">Email</Label>
+                      <Input 
+                        id="signin-email" 
+                        type="email" 
+                        placeholder="yourname@university.edu" 
+                        value={signInForm.email}
+                        onChange={(e) => setSignInForm({...signInForm, email: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="signin-password">Password</Label>
+                        <a href="#" className="text-xs text-unitask-primary hover:underline">Forgot password?</a>
+                      </div>
+                      <Input 
+                        id="signin-password" 
+                        type="password" 
+                        value={signInForm.password}
+                        onChange={(e) => setSignInForm({...signInForm, password: e.target.value})}
+                        required
+                      />
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button type="submit" className="w-full bg-unitask-primary hover:bg-unitask-secondary" disabled={!signInFormValid}>
+                      SIGN IN
+                    </Button>
+                  </CardFooter>
+                </form>
+              </TabsContent>
+              
+              <TabsContent value="signup" className="mt-0">
+                <form onSubmit={handleSignUpSubmit}>
+                  <CardContent className="space-y-4 pt-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="firstName">First Name</Label>
+                        <Input 
+                          id="firstName" 
+                          value={signUpForm.firstName}
+                          onChange={(e) => setSignUpForm({...signUpForm, firstName: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="lastName">Last Name</Label>
+                        <Input 
+                          id="lastName" 
+                          value={signUpForm.lastName}
+                          onChange={(e) => setSignUpForm({...signUpForm, lastName: e.target.value})}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
+                      <Input 
+                        id="signup-email" 
+                        type="email" 
+                        placeholder="yourname@university.edu" 
+                        value={signUpForm.email}
+                        onChange={(e) => setSignUpForm({...signUpForm, email: e.target.value})}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Password</Label>
+                      <Input 
+                        id="signup-password" 
+                        type="password" 
+                        value={signUpForm.password}
+                        onChange={(e) => setSignUpForm({...signUpForm, password: e.target.value})}
+                        required
+                      />
+                      
+                      <div className="mt-2 space-y-2 text-xs">
+                        <p className="font-medium text-muted-foreground">Password must contain:</p>
+                        <ul className="space-y-1">
+                          {passwordValidation.map((criterion) => (
+                            <li 
+                              key={criterion.id} 
+                              className={`flex items-center ${criterion.valid ? 'text-green-600' : 'text-muted-foreground'}`}
+                            >
+                              {criterion.valid ? '✓' : '○'} {criterion.label}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="confirmPassword">Confirm Password</Label>
+                      <Input 
+                        id="confirmPassword" 
+                        type="password" 
+                        value={signUpForm.confirmPassword}
+                        onChange={(e) => setSignUpForm({...signUpForm, confirmPassword: e.target.value})}
+                        required
+                      />
+                      {signUpForm.confirmPassword && !passwordsMatch && (
+                        <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
+                      )}
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Button type="submit" className="w-full bg-unitask-primary hover:bg-unitask-secondary" disabled={!signUpFormValid}>
+                      SIGN UP
+                    </Button>
+                  </CardFooter>
+                </form>
+              </TabsContent>
             </Tabs>
           </CardHeader>
-          
-          <TabsContent value="signin" className="mt-0">
-            <form onSubmit={handleSignInSubmit}>
-              <CardContent className="space-y-4 pt-4">
-                <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
-                  <Input 
-                    id="signin-email" 
-                    type="email" 
-                    placeholder="yourname@university.edu" 
-                    value={signInForm.email}
-                    onChange={(e) => setSignInForm({...signInForm, email: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="signin-password">Password</Label>
-                    <a href="#" className="text-xs text-unitask-primary hover:underline">Forgot password?</a>
-                  </div>
-                  <Input 
-                    id="signin-password" 
-                    type="password" 
-                    value={signInForm.password}
-                    onChange={(e) => setSignInForm({...signInForm, password: e.target.value})}
-                    required
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" className="w-full bg-unitask-primary hover:bg-unitask-secondary" disabled={!signInFormValid}>
-                  SIGN IN
-                </Button>
-              </CardFooter>
-            </form>
-          </TabsContent>
-          
-          <TabsContent value="signup" className="mt-0">
-            <form onSubmit={handleSignUpSubmit}>
-              <CardContent className="space-y-4 pt-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">First Name</Label>
-                    <Input 
-                      id="firstName" 
-                      value={signUpForm.firstName}
-                      onChange={(e) => setSignUpForm({...signUpForm, firstName: e.target.value})}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Last Name</Label>
-                    <Input 
-                      id="lastName" 
-                      value={signUpForm.lastName}
-                      onChange={(e) => setSignUpForm({...signUpForm, lastName: e.target.value})}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
-                  <Input 
-                    id="signup-email" 
-                    type="email" 
-                    placeholder="yourname@university.edu" 
-                    value={signUpForm.email}
-                    onChange={(e) => setSignUpForm({...signUpForm, email: e.target.value})}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
-                  <Input 
-                    id="signup-password" 
-                    type="password" 
-                    value={signUpForm.password}
-                    onChange={(e) => setSignUpForm({...signUpForm, password: e.target.value})}
-                    required
-                  />
-                  
-                  <div className="mt-2 space-y-2 text-xs">
-                    <p className="font-medium text-muted-foreground">Password must contain:</p>
-                    <ul className="space-y-1">
-                      {passwordValidation.map((criterion) => (
-                        <li 
-                          key={criterion.id} 
-                          className={`flex items-center ${criterion.valid ? 'text-green-600' : 'text-muted-foreground'}`}
-                        >
-                          {criterion.valid ? '✓' : '○'} {criterion.label}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Input 
-                    id="confirmPassword" 
-                    type="password" 
-                    value={signUpForm.confirmPassword}
-                    onChange={(e) => setSignUpForm({...signUpForm, confirmPassword: e.target.value})}
-                    required
-                  />
-                  {signUpForm.confirmPassword && !passwordsMatch && (
-                    <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button type="submit" className="w-full bg-unitask-primary hover:bg-unitask-secondary" disabled={!signUpFormValid}>
-                  SIGN UP
-                </Button>
-              </CardFooter>
-            </form>
-          </TabsContent>
         </Card>
       </div>
     </div>
