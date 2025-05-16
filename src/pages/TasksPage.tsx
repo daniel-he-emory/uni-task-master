@@ -13,11 +13,16 @@ const TasksPage = () => {
     
     if (!currentUser) {
       toast.error('Please login to access the task board');
-      navigate('/auth');
+      navigate('/auth', { state: { redirect: '/tasks' } });
     }
   }, [navigate]);
   
-  return <TaskBoard />;
+  return (
+    <div className="animate-fade-in">
+      <h1 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-unitask-primary to-unitask-accent">Task Board</h1>
+      <TaskBoard />
+    </div>
+  );
 };
 
 export default TasksPage;

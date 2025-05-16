@@ -13,11 +13,16 @@ const ReportsPage = () => {
     
     if (!currentUser) {
       toast.error('Please login to access the reports');
-      navigate('/auth');
+      navigate('/auth', { state: { redirect: '/reports' } });
     }
   }, [navigate]);
   
-  return <ReportForm />;
+  return (
+    <div className="animate-fade-in">
+      <h1 className="text-3xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-unitask-primary to-unitask-accent">Reports</h1>
+      <ReportForm />
+    </div>
+  );
 };
 
 export default ReportsPage;

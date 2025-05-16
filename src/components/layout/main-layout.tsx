@@ -12,8 +12,10 @@ const MainLayout = () => {
         <AppSidebar />
         <div className="flex flex-col flex-grow">
           <Navbar />
-          <main className="flex-1 p-4 md:p-6 overflow-y-auto bg-gray-50">
-            <Outlet />
+          <main className="flex-1 p-4 md:p-6 overflow-y-auto bg-gray-50 animate-fade-in">
+            <div className="page-transition">
+              <Outlet />
+            </div>
           </main>
         </div>
       </div>

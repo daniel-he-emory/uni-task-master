@@ -91,13 +91,56 @@
 
   body {
     @apply bg-background text-foreground;
+    transition: background-color 0.3s ease;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .card-hover {
+    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .btn-transition {
+    @apply transition-all duration-200;
+  }
+  
+  .glass-effect {
+    @apply backdrop-blur-sm bg-white/80 dark:bg-black/30;
   }
 }
 
 .task-card {
-  @apply bg-white rounded-lg shadow-md p-4 mb-3 cursor-move border border-unitask-border hover:shadow-lg transition-shadow duration-200;
+  @apply bg-white rounded-lg shadow-md p-4 mb-3 cursor-move border border-unitask-border hover:shadow-lg transition-all duration-200 animate-fade-in;
 }
 
 .task-column {
-  @apply bg-unitask-card rounded-lg p-4 min-h-[calc(100vh-240px)] w-full;
+  @apply bg-unitask-card rounded-lg p-4 min-h-[calc(100vh-240px)] w-full transition-all duration-300;
+}
+
+/* Utility animations for page elements */
+.page-transition {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Interactive hover effects */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Smoother button transitions */
+button, a {
+  transition: all 0.2s ease;
 }
