@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { InfoIcon } from 'lucide-react';
+import { InfoIcon, Calendar } from 'lucide-react';
 
 // TimeSlot type
 interface TimeSlot {
@@ -84,35 +84,71 @@ const MeetingCalendar = () => {
   const [activeTab, setActiveTab] = useState('group-schedule');
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>(generateTimeSlots());
   const [selectedSlots, setSelectedSlots] = useState<TimeSlot[]>([]);
-  const [events, setEvents] = useState<Event[]>(sampleEvents);
+  const [events, setEvents] = useState<Event[]>([]);
   const [newEventTitle, setNewEventTitle] = useState('');
   const [createEventDialogOpen, setCreateEventDialogOpen] = useState(false);
   const [instructionsOpen, setInstructionsOpen] = useState(true);
+  const [selectedEventTime, setSelectedEventTime] = useState({ day: '', startTime: '', endTime: '' });
+  
+  // Load data from localStorage when component mounts
+  useEffect(() => {
+    // Load saved events
+    const savedEvents = localStorage.getItem('meetingEvents');
+    if (savedEvents) {
+      setEvents(JSON.parse(savedEvents));
+    } else {
+      setEvents(sampleEvents); // Use sample events if no saved events
+    }
+    
+    // Load saved time slots selections
+    const savedTimeSlots = localStorage.getItem('meetingTimeSlots');
+    if (savedTimeSlots) {
+      setTimeSlots(JSON.parse(savedTimeSlots));
+      
+      // Reconstruct selected slots from the saved time slots
+      const savedSelected = JSON.parse(savedTimeSlots).filter((slot: TimeSlot) => slot.selected);
+      setSelectedSlots(savedSelected);
+    }
+    
+    console.log('Meeting calendar loaded data from localStorage');
+  }, []);
+  
+  // Save data to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem('meetingEvents', JSON.stringify(events));
+  }, [events]);
+  
+  useEffect(() => {
+    localStorage.setItem('meetingTimeSlots', JSON.stringify(timeSlots));
+  }, [timeSlots]);
   
   // Toggle time slot selection
   const toggleTimeSlot = (slotId: string) => {
-    setTimeSlots(timeSlots.map(slot => {
-      if (slot.id === slotId) {
-        const newSlot = { ...slot, selected: !slot.selected };
-        
-        // Add or remove from selected slots
-        if (newSlot.selected) {
-          setSelectedSlots([...selectedSlots, newSlot]);
-        } else {
-          setSelectedSlots(selectedSlots.filter(s => s.id !== slotId));
+    setTimeSlots(prevTimeSlots => {
+      const updatedTimeSlots = prevTimeSlots.map(slot => {
+        if (slot.id === slotId) {
+          return { ...slot, selected: !slot.selected };
         }
-        
-        return newSlot;
-      }
-      return slot;
-    }));
+        return slot;
+      });
+      
+      // Update selected slots
+      const updatedSelected = updatedTimeSlots.filter(slot => slot.selected);
+      setSelectedSlots(updatedSelected);
+      
+      return updatedTimeSlots;
+    });
   };
   
   // Clear all selections
   const clearSelections = () => {
-    setTimeSlots(timeSlots.map(slot => ({ ...slot, selected: false })));
+    const clearedTimeSlots = timeSlots.map(slot => ({ ...slot, selected: false }));
+    setTimeSlots(clearedTimeSlots);
     setSelectedSlots([]);
     toast.success('All selections cleared');
+    
+    // Save the cleared state to localStorage
+    localStorage.setItem('meetingTimeSlots', JSON.stringify(clearedTimeSlots));
   };
   
   // Confirm selection
@@ -124,6 +160,9 @@ const MeetingCalendar = () => {
     
     toast.success('Your availability has been saved');
     setActiveTab('group-schedule');
+    
+    // Save to localStorage 
+    localStorage.setItem('meetingTimeSlots', JSON.stringify(timeSlots));
   };
   
   // Create event
@@ -133,19 +172,29 @@ const MeetingCalendar = () => {
       return;
     }
     
-    // In a real app, we would use the selected common time slot
-    // For this demo, we'll add a hardcoded event
+    const { day, startTime, endTime } = selectedEventTime;
+    
+    if (!day || !startTime || !endTime) {
+      toast.error('Invalid time selection');
+      return;
+    }
+    
     const newEvent: Event = {
       id: Date.now().toString(),
       title: newEventTitle,
-      day: 'Thursday',
-      startTime: '3:00 PM',
-      endTime: '4:00 PM'
+      day,
+      startTime,
+      endTime
     };
     
-    setEvents([...events, newEvent]);
+    const updatedEvents = [...events, newEvent];
+    setEvents(updatedEvents);
     setCreateEventDialogOpen(false);
     setNewEventTitle('');
+    
+    // Save to localStorage
+    localStorage.setItem('meetingEvents', JSON.stringify(updatedEvents));
+    
     toast.success('Event created successfully');
   };
   
@@ -172,6 +221,11 @@ const MeetingCalendar = () => {
   
   // Start event at selected common available time
   const startEventAtTime = (day: string, timeIndex: number) => {
+    setSelectedEventTime({
+      day,
+      startTime: timeLabels[timeIndex],
+      endTime: timeLabels[timeIndex + 1]
+    });
     setCreateEventDialogOpen(true);
   };
 
@@ -182,6 +236,7 @@ const MeetingCalendar = () => {
         
         {activeTab === 'group-schedule' && (
           <Button onClick={() => setActiveTab('availability')} className="bg-unitask-primary hover:bg-unitask-secondary">
+            <Calendar className="w-4 h-4 mr-2" />
             Start A Group Availability Poll
           </Button>
         )}
@@ -248,7 +303,14 @@ const MeetingCalendar = () => {
                   <CardTitle>Team Calendar</CardTitle>
                   <CardDescription>Week of May 14, 2025 - May 20, 2025</CardDescription>
                 </div>
-                <Button onClick={() => setCreateEventDialogOpen(true)}>CREATE EVENT</Button>
+                <Button onClick={() => {
+                  setSelectedEventTime({
+                    day: 'Thursday',
+                    startTime: '3:00 PM',
+                    endTime: '4:00 PM'
+                  });
+                  setCreateEventDialogOpen(true);
+                }}>CREATE EVENT</Button>
               </div>
             </CardHeader>
             <CardContent>
@@ -439,7 +501,9 @@ const MeetingCalendar = () => {
             
             <div>
               <p className="text-sm font-medium mb-1">Selected Time:</p>
-              <p className="text-sm text-muted-foreground">Thursday, 3:00 PM - 4:00 PM</p>
+              <p className="text-sm text-muted-foreground">
+                {selectedEventTime.day}, {selectedEventTime.startTime} - {selectedEventTime.endTime}
+              </p>
             </div>
           </div>
           

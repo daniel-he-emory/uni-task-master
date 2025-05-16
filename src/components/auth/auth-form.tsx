@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useNavigate } from 'react-router-dom';
 import Logo from '@/components/ui/logo';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 // Password validation criteria
 const passwordCriteria = [
@@ -21,6 +23,8 @@ const passwordCriteria = [
 const AuthForm = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('signin');
+  const [emailSentDialogOpen, setEmailSentDialogOpen] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState('');
   
   // Sign Up form state
   const [signUpForm, setSignUpForm] = useState({
@@ -70,21 +74,61 @@ const AuthForm = () => {
     // In a real app, you'd send this to your backend
     console.log('Sign Up Form Submitted:', signUpForm);
     
-    // Simulate successful signup
-    toast.success('Sign up successful! Please check your email to confirm your account.');
+    // Save user data in localStorage (simulating database storage)
+    const userData = {
+      firstName: signUpForm.firstName,
+      lastName: signUpForm.lastName,
+      email: signUpForm.email,
+      password: signUpForm.password, // In a real app, you'd never store plain text passwords
+      verified: false,
+      dateCreated: new Date().toISOString()
+    };
     
-    // Switch to sign in tab
-    setActiveTab('signin');
+    // Store in localStorage (simulating a database)
+    localStorage.setItem(`user_${signUpForm.email}`, JSON.stringify(userData));
+    
+    // Show email confirmation dialog
+    setRegisteredEmail(signUpForm.email);
+    setEmailSentDialogOpen(true);
   };
 
   const handleSignInSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // In a real app, you'd send this to your backend and handle authentication
-    console.log('Sign In Form Submitted:', signInForm);
+    // Check if user exists in localStorage
+    const userData = localStorage.getItem(`user_${signInForm.email}`);
+    
+    if (!userData) {
+      toast.error('User not found. Please sign up.');
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    
+    // Check password (simple comparison for demo purposes)
+    if (user.password !== signInForm.password) {
+      toast.error('Invalid password');
+      return;
+    }
+    
+    // Check if user is verified
+    if (!user.verified) {
+      toast.warning('Please verify your email before signing in');
+      setRegisteredEmail(signInForm.email);
+      setEmailSentDialogOpen(true);
+      return;
+    }
     
     // Simulate successful login
     toast.success('Sign in successful!');
+    
+    // Save current user to localStorage
+    localStorage.setItem('currentUser', JSON.stringify({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      verified: user.verified
+    }));
     
     // Navigate to workspace selection
     navigate('/workspace');
@@ -92,6 +136,20 @@ const AuthForm = () => {
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
+  };
+  
+  const handleVerifyEmail = () => {
+    // Simulate email verification
+    const userData = localStorage.getItem(`user_${registeredEmail}`);
+    
+    if (userData) {
+      const user = JSON.parse(userData);
+      user.verified = true;
+      localStorage.setItem(`user_${registeredEmail}`, JSON.stringify(user));
+      toast.success('Email verified successfully! You can now sign in.');
+      setEmailSentDialogOpen(false);
+      setActiveTab('signin');
+    }
   };
 
   return (
@@ -229,6 +287,27 @@ const AuthForm = () => {
           </CardHeader>
         </Card>
       </div>
+      
+      {/* Email Verification Dialog */}
+      <Dialog open={emailSentDialogOpen} onOpenChange={setEmailSentDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Email Verification Required</DialogTitle>
+            <DialogDescription>
+              We've sent a verification email to {registeredEmail}. Please check your inbox and click the verification link.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-sm text-muted-foreground">
+              For this demo, you can click the button below to simulate clicking on the verification link in the email.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailSentDialogOpen(false)}>Close</Button>
+            <Button onClick={handleVerifyEmail}>Verify Email</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
