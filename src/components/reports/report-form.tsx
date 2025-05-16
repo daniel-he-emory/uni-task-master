@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,28 @@ interface Report {
   date: string;
 }
 
+// Sample initial reports
+const sampleReports: Report[] = [
+  {
+    id: '1',
+    title: 'First Week Progress',
+    accomplishment: 'Completed project planning and task distribution.',
+    feedback: 'Instructor suggested adding more research components.',
+    comments: 'Need to focus on literature review next week.',
+    date: '2025-05-07',
+  },
+  {
+    id: '2',
+    title: 'UI Design Completed',
+    accomplishment: 'Finished wireframes and mockups for all pages.',
+    feedback: 'Client loved the design but requested minor color adjustments.',
+    comments: 'Will refine colors and start implementation next week.',
+    date: '2025-05-12',
+  }
+];
+
+const REPORTS_STORAGE_KEY = 'unitask-reports';
+
 const ReportForm = () => {
   const [activeTab, setActiveTab] = useState('add');
   const [newReport, setNewReport] = useState<Omit<Report, 'id' | 'date'>>({
@@ -28,29 +50,39 @@ const ReportForm = () => {
     comments: '',
   });
   
-  const [reports, setReports] = useState<Report[]>([
-    {
-      id: '1',
-      title: 'First Week Progress',
-      accomplishment: 'Completed project planning and task distribution.',
-      feedback: 'Instructor suggested adding more research components.',
-      comments: 'Need to focus on literature review next week.',
-      date: '2025-05-07',
-    },
-    {
-      id: '2',
-      title: 'UI Design Completed',
-      accomplishment: 'Finished wireframes and mockups for all pages.',
-      feedback: 'Client loved the design but requested minor color adjustments.',
-      comments: 'Will refine colors and start implementation next week.',
-      date: '2025-05-12',
-    }
-  ]);
+  const [reports, setReports] = useState<Report[]>([]);
   
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingReport, setEditingReport] = useState<Report | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  
+  // Load reports from localStorage on component mount
+  useEffect(() => {
+    const savedReports = localStorage.getItem(REPORTS_STORAGE_KEY);
+    if (savedReports) {
+      try {
+        const parsedReports = JSON.parse(savedReports);
+        setReports(parsedReports);
+        console.log('Reports loaded from localStorage:', parsedReports.length);
+      } catch (error) {
+        console.error('Failed to parse reports from localStorage:', error);
+        setReports(sampleReports);
+      }
+    } else {
+      setReports(sampleReports);
+      // Save initial reports to localStorage on first load
+      localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(sampleReports));
+    }
+  }, []);
+  
+  // Save reports to localStorage whenever they change
+  useEffect(() => {
+    if (reports.length > 0) {
+      localStorage.setItem(REPORTS_STORAGE_KEY, JSON.stringify(reports));
+      console.log('Reports saved to localStorage:', reports.length);
+    }
+  }, [reports]);
   
   // Handle form submission for new report
   const handleSubmitReport = () => {

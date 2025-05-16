@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -97,8 +97,10 @@ const initialTasks: Task[] = [
   },
 ];
 
+const TASKS_STORAGE_KEY = 'unitask-tasks';
+
 const TaskBoard = () => {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [newTask, setNewTask] = useState<Omit<Task, 'id' | 'subtasks'>>({
     title: '',
@@ -110,6 +112,33 @@ const TaskBoard = () => {
   
   // Team members
   const teamMembers = ['Alex', 'Casey', 'Jordan', 'Taylor'];
+  
+  // Load tasks from localStorage on component mount
+  useEffect(() => {
+    const savedTasks = localStorage.getItem(TASKS_STORAGE_KEY);
+    if (savedTasks) {
+      try {
+        setTasks(JSON.parse(savedTasks));
+        console.log('Tasks loaded from localStorage:', JSON.parse(savedTasks).length);
+      } catch (error) {
+        console.error('Failed to parse tasks from localStorage:', error);
+        setTasks(initialTasks);
+      }
+    } else {
+      setTasks(initialTasks);
+      // Save initial tasks to localStorage on first load
+      localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(initialTasks));
+      console.log('Initial tasks saved to localStorage');
+    }
+  }, []);
+
+  // Save tasks to localStorage whenever they change
+  useEffect(() => {
+    if (tasks.length > 0) {
+      localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+      console.log('Tasks saved to localStorage:', tasks.length);
+    }
+  }, [tasks]);
   
   // Filter tasks by status
   const todoTasks = tasks.filter(task => task.status === 'To Do');
@@ -180,6 +209,19 @@ const TaskBoard = () => {
               ? { ...subtask, completed: !subtask.completed } 
               : subtask
           )
+        };
+      }
+      return task;
+    }));
+  };
+  
+  // Handle adding a new subtask
+  const handleAddSubtask = (taskId: string, subtask: SubTask) => {
+    setTasks(tasks.map(task => {
+      if (task.id === taskId) {
+        return {
+          ...task,
+          subtasks: [...task.subtasks, subtask]
         };
       }
       return task;
@@ -285,6 +327,7 @@ const TaskBoard = () => {
                 onStatusChange={handleStatusChange}
                 onDelete={handleDeleteTask}
                 onToggleSubtask={handleToggleSubtask}
+                onAddSubtask={handleAddSubtask}
               />
             ))}
             {todoTasks.length === 0 && (
@@ -305,6 +348,7 @@ const TaskBoard = () => {
                 onStatusChange={handleStatusChange}
                 onDelete={handleDeleteTask}
                 onToggleSubtask={handleToggleSubtask}
+                onAddSubtask={handleAddSubtask}
               />
             ))}
             {doingTasks.length === 0 && (
@@ -325,6 +369,7 @@ const TaskBoard = () => {
                 onStatusChange={handleStatusChange}
                 onDelete={handleDeleteTask}
                 onToggleSubtask={handleToggleSubtask}
+                onAddSubtask={handleAddSubtask}
               />
             ))}
             {doneTasks.length === 0 && (

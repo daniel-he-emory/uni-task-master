@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,9 +15,10 @@ interface TaskCardProps {
   onStatusChange: (taskId: string, status: 'To Do' | 'Doing' | 'Done') => void;
   onDelete: (taskId: string) => void;
   onToggleSubtask: (taskId: string, subtaskId: string) => void;
+  onAddSubtask: (taskId: string, subtask: SubTask) => void;
 }
 
-const TaskCard = ({ task, onStatusChange, onDelete, onToggleSubtask }: TaskCardProps) => {
+const TaskCard = ({ task, onStatusChange, onDelete, onToggleSubtask, onAddSubtask }: TaskCardProps) => {
   const [expanded, setExpanded] = useState(false);
   const [addSubtaskDialogOpen, setAddSubtaskDialogOpen] = useState(false);
   const [newSubtask, setNewSubtask] = useState('');
@@ -59,9 +59,8 @@ const TaskCard = ({ task, onStatusChange, onDelete, onToggleSubtask }: TaskCardP
       completed: false,
     };
     
-    // In a real app, you would update the task with the new subtask via API
-    // For this demo, we'll handle it in the parent component
-    // onAddSubtask(task.id, newSubtaskItem);
+    // Send the new subtask to the parent component
+    onAddSubtask(task.id, newSubtaskItem);
     
     setNewSubtask('');
     setAddSubtaskDialogOpen(false);

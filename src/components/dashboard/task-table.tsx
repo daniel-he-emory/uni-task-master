@@ -1,11 +1,11 @@
-
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Task } from '@/components/tasks/task-board';
 
-// Sample task data
-const taskData = [
+// Sample task data as fallback
+const sampleTaskData = [
   {
     id: 1,
     title: 'Create project presentation',
@@ -57,6 +57,28 @@ const taskData = [
 ];
 
 const TaskTable = () => {
+  const [taskData, setTaskData] = useState<any[]>([]);
+  
+  useEffect(() => {
+    // Load tasks from localStorage
+    const loadTasks = () => {
+      const savedTasks = localStorage.getItem('unitask-tasks');
+      if (savedTasks) {
+        try {
+          setTaskData(JSON.parse(savedTasks));
+          console.log('Dashboard: Tasks loaded from localStorage');
+        } catch (error) {
+          console.error('Dashboard: Failed to load tasks from localStorage:', error);
+          setTaskData(sampleTaskData);
+        }
+      } else {
+        setTaskData(sampleTaskData);
+      }
+    };
+    
+    loadTasks();
+  }, []);
+
   // Function to get status badge color
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -108,6 +130,11 @@ const TaskTable = () => {
                 <TableCell>{formatDate(task.dueDate)}</TableCell>
               </TableRow>
             ))}
+            {taskData.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center py-4">No tasks available</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>
